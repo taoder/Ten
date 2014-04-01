@@ -1,18 +1,72 @@
 #:kivy 1.8.0
 
-
-
+<TenEmpty>:
+    canvas:
+        Color:
+            rgb: 0x47 / 255., 0x45 / 255., 0x46 / 255.
+            # Carre: rgb: 0x8C / 255., 0x8B / 255., 0x8C / 255.
+	        # Rond : rgb: 0xb2 / 255., 0x89 / 255., 0x46 / 255.
+		Ellipse:
+			pos: self.pos
+			size: self.size
 
 <TenSquare>:
     canvas:
         Color:
-			rgb: 1,0,0
+            rgb: 0x8C / 255., 0x8B / 255., 0x8C / 255.
+		Ellipse:
+			pos: self.pos
+			size: self.size
+
+<TenRound>:
+    canvas:
+        Color:
+	        rgb: 0xb2 / 255., 0x89 / 255., 0x46 / 255.
+		Rectangle:
+			pos: self.pos
+			size: self.size
+
+<TenBoard>:
+    on_size: self.reposition()
+	on_pos: self.reposition()
+
+AnchorLayout:
+    id: anchor
+    canvas:
+        Color:
+            rgb: 0x3F / 255., 0x3C / 255., 0x3E / 255.
         Rectangle:
             pos: self.pos
             size: self.size
 
-
-
-
-
+    TenGame:
+        id: game
+        anchor_x: 'center'
+        anchor_y: 'center'
+        GridLayout:
+            padding: '15dp'
+            spacing: '10dp'
+            rows: 3
+            cols: 3
+            size: [min(anchor.width, anchor.height)] * 2
+            TenBoard:
+                id: board1
+            TenBoard:
+                id: board1
+            TenBoard:
+                id: board2
+            TenBoard:
+                id: board3
+            TenBoard:
+                id: board4
+            TenBoard:
+                id: board5
+            TenBoard:
+                id: board6
+            TenBoard:
+                id: board7
+            TenBoard:
+                id: board8
+            TenBoard:
+                id: board9
 
