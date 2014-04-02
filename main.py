@@ -6,6 +6,7 @@ from kivy.uix.widget import Widget
 from kivy.graphics import *
 from kivy.properties import NumericProperty, ObjectProperty
 
+app = None
 
 class TenRound(Widget):
     pass
@@ -69,7 +70,9 @@ class TenBoard(Widget):
 class TenGame(Widget):
     cube_size = NumericProperty(10)
     cube_padding = NumericProperty(10)
-    board1 = ObjectProperty()
+    grid = ObjectProperty()
+
+    """board1 = ObjectProperty()
     board2 = ObjectProperty()
     board3 = ObjectProperty()
     board4 = ObjectProperty()
@@ -77,26 +80,30 @@ class TenGame(Widget):
     board6 = ObjectProperty()
     board7 = ObjectProperty()
     board8 = ObjectProperty()
-    board9 = ObjectProperty()
+    board9 = ObjectProperty()"""
 
     def __init__(self, **kwargs):
         super(TenGame, self).__init__()
 
-        self.board = [
-            [self.board1, self.board2, self.board3],
-            [self.board4, self.board5, self.board6],
-            [self.board7, self.board8, self.board9]]
+        """self.board = [
+            [self.ids.board1.__self__, self.ids.board2.__self__, self.ids.board3.__self__],
+            [self.ids.board4.__self__, self.ids.board5.__self__, self.ids.board6.__self__],
+            [self.ids.board7.__self__, self.ids.board8.__self__, self.ids.board9.__self__]]"""
 
-    def on_touch_move(self, touch):
-        print("ici")
-        bsize = self.board1.size
-        bpos = self.board1.pos
-        self.board1 = TenSquare(pos=bpos, size=bsize)
+    def on_touch_down(self, touch):
+        for board in app.ids.grid.__self__.walk(restrict=True):
+            if board.collide_with(touch.x, touch.y):
+                bsize = board.size
+                bpos = board.pos
+                self.remove_widget(board)
+                self.add_widget(TenSquare(pos=bpos, size=bsize))
 
 
 class TenApp(App):
     def build(self):
-        pass
+        global app
+        app = self
+        return TenGame()
 
 if __name__ == '__main__':
     TenApp().run()

@@ -4,8 +4,6 @@
     canvas:
         Color:
             rgb: 0x47 / 255., 0x45 / 255., 0x46 / 255.
-            # Carre: rgb: 0x8C / 255., 0x8B / 255., 0x8C / 255.
-	        # Rond : rgb: 0xb2 / 255., 0x89 / 255., 0x46 / 255.
 		Ellipse:
 			pos: self.pos
 			size: self.size
@@ -30,25 +28,22 @@
     on_size: self.reposition()
 	on_pos: self.reposition()
 
-AnchorLayout:
-    id: anchor
-    canvas:
-        Color:
-            rgb: 0x3F / 255., 0x3C / 255., 0x3E / 255.
-        Rectangle:
-            pos: self.pos
-            size: self.size
-
-    TenGame:
-        id: game
-        anchor_x: 'center'
-        anchor_y: 'center'
+<TenGame>:
+    AnchorLayout:
+        id: anchor
+        size: root.size
+        canvas:
+            Color:
+                rgb: 0x3F / 255., 0x3C / 255., 0x3E / 255.
+            Rectangle:
+                pos: self.pos
+                size: self.size
         GridLayout:
-            padding: '15dp'
-            spacing: '10dp'
+            id: grid
+            anchor_x: 'center'
+            anchor_y: 'center'
             rows: 3
             cols: 3
-            size: [min(anchor.width, anchor.height)] * 2
             TenBoard:
                 id: board1
             TenBoard:
