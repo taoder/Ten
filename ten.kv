@@ -12,7 +12,7 @@
     canvas:
         Color:
             rgb: 0x8C / 255., 0x8B / 255., 0x8C / 255.
-		Ellipse:
+		Rectangle:
 			pos: self.pos
 			size: self.size
 
@@ -20,48 +20,49 @@
     canvas:
         Color:
 	        rgb: 0xb2 / 255., 0x89 / 255., 0x46 / 255.
-		Rectangle:
+		Ellipse:
 			pos: self.pos
 			size: self.size
 
-<TenBoard>:
+<TenBoard>
     on_size: self.reposition()
 	on_pos: self.reposition()
 
-<TenGame>:
+<TenPlaceholder>:
+    item: item
     AnchorLayout:
         id: anchor
-        size: root.size
+        TenBoard:
+            id: item
+            size_hint: None, None
+			size: [min(anchor.width, anchor.height)] * 2
+
+<TenGame>:
+    GridLayout:
+        id: grid
+        rows: 3
+        cols: 3
         canvas:
             Color:
                 rgb: 0x3F / 255., 0x3C / 255., 0x3E / 255.
             Rectangle:
                 pos: self.pos
                 size: self.size
-        GridLayout:
-            id: grid
-            anchor_x: 'center'
-            anchor_y: 'center'
-            rows: 3
-            cols: 3
-            TenBoard:
-                id: board1
-            TenBoard:
-                id: board1
-            TenBoard:
-                id: board2
-            TenBoard:
-                id: board3
-            TenBoard:
-                id: board4
-            TenBoard:
-                id: board5
-            TenBoard:
-                id: board6
-            TenBoard:
-                id: board7
-            TenBoard:
-                id: board8
-            TenBoard:
-                id: board9
-
+        TenPlaceholder:
+            id: board1
+        TenPlaceholder:
+            id: board2
+        TenPlaceholder:
+            id: board3
+        TenPlaceholder:
+            id: board4
+        TenPlaceholder:
+            id: board5
+        TenPlaceholder:
+            id: board6
+        TenPlaceholder:
+            id: board7
+        TenPlaceholder:
+            id: board8
+        TenPlaceholder:
+            id: board9

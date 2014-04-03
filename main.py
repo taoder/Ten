@@ -20,6 +20,14 @@ class TenEmpty(Widget):
     pass
 
 
+class TenPlaceholder(Widget):
+    item = ObjectProperty()
+
+    def __init__(self, **kwargs):
+        super(TenPlaceholder, self).__init__()
+        print('placeholder')
+
+
 class TenBoard(Widget):
     cube_size = NumericProperty(10)
     cube_padding = NumericProperty(10)
@@ -36,10 +44,11 @@ class TenBoard(Widget):
                 TenEmpty(pos=self.index_to_pos(ix, iy), size=csize)
 
     def reposition(self, *args):
+        print('reposition')
         self.rebuild_background()
         # calculate the size of a number
         l = min(self.width, self.height)
-        padding = (l / 3.) / 6.
+        padding = (l / 3.) / 2.5
         cube_size = (l - (padding * 4)) / 3.
         self.cube_size = cube_size
         self.cube_padding = padding
