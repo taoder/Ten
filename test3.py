@@ -1,80 +1,66 @@
-import kivy
-kivy.require('1.8.0')
-
 from kivy.uix.widget import Widget
 from kivy.app import App
-from kivy.properties import NumericProperty, ObjectProperty
-from kivy.graphics import *
+from kivy.properties import NumericProperty
+from kivy.lang import Builder
 from kivy.animation import Animation
 import math
 
-
-class TenEmpty(Widget):
-    index = NumericProperty(0)
-    #scale = NumericProperty(1)
-    cube_size = NumericProperty(10)
-    cube_padding = NumericProperty(10)
-
-
-class TenRound(Widget):
-    pass
-
-
-class TenSquare(Widget):
-    pass
-
+Builder.load_string('''
+#:import random random.random
+<TenBoardLayout>:
+    canvas:
+        Color:
+            hsv: .1, .3, .8
+        Rectangle:
+            pos: self.pos
+            size: self.size
+<TenBoard>:
+    size: 1, 1
+    canvas.before:
+        PushMatrix
+        Translate:
+            xy: self.x, self.y
+        Scale:
+            xyz: self.scale, self.scale, 0
+    canvas:
+        Color:
+            hsv: self.index / 9., .8, .8
+        Rectangle:
+            size: self.size
+        Color:
+            rgba: 1, 0, 0, self.index % 2
+        Ellipse:
+            pos: .25, .25
+            size: .5, .5
+        Color:
+            rgba: 0, 1, 0, (self.index + 1) % 2
+        Rectangle:
+            pos: .25, .25
+            size: .5, .5
+    canvas.after:
+        PopMatrix
+''')
 
 class TenBoard(Widget):
     index = NumericProperty(0)
-    cube_size = NumericProperty(10)
-    cube_padding = NumericProperty(10)
+    scale = NumericProperty(1)
 
-    def __init__(self, **kwargs):
-        super(TenBoard, self).__init__(**kwargs)
-        self.cells = [self.ids.cell1, self.ids.cell2, self.ids.cell3,
-                      self.ids.cell4, self.ids.cell5, self.ids.cell6,
-                      self.ids.cell7, self.ids.cell8, self.ids.cell9]
-        self.relayout()
-
-    def relayout(self, *args):
-        xmin, ymin, cs, _ = self.cube_info
-        x = xmin
-        y = ymin
-
-        for index, cell in enumerate(self.cells):
-            cell.pos = x, y
-            cell.scale = cs
-            if index % 3 == 2:
-                x = xmin
-                y += cs
-            else:
-                x += cs
-
-    @property
-    def cube_info(self):
-        s = min(self.width, self.height)
-        cs = s / 3
-        xmin = self.x + (self.width - s) / 2.
-        ymin = self.y + (self.height - s) / 2.
-        return xmin, ymin, cs, s
-
-    """def collide_point(self, x, y):
+    def collide_point(self, x, y):
         x = (x - self.x) / self.scale
         y = (y - self.y) / self.scale
         x += self.x
         y += self.y
-        return super(TenBoard, self).collide_point(x, y)"""
+        return super(TenBoard, self).collide_point(x, y)
 
     def on_touch_down(self, touch):
         if not self.collide_point(*touch.pos):
             return False
-        if self.parent.board_focused_index == self.index :
+        if self.parent.board_focused_index == self.index:
             self.parent.unfocus()
         else:
             self.parent.unfocus()
             self.parent.focus(self.index)
         return True
-
 
 class TenBoardLayout(Widget):
 
@@ -95,15 +81,14 @@ class TenBoardLayout(Widget):
         xmin, ymin, cs, _ = self.cube_info
         x = xmin
         y = ymin
-        cube_size = cs, cs
 
         for index, board in enumerate(self.boards):
             if index == self.board_focused_index:
                 board.pos = xmin, ymin
-                board.size = cube_size
+                board.scale = cs
             else:
                 board.pos = x, y
-                board.size = cube_size
+                board.scale = cs
             if index % 3 == 2:
                 x = xmin
                 y += cs
@@ -134,11 +119,11 @@ class TenBoardLayout(Widget):
         x = xmin + ((index % 3) + (index % 3) / -2.) * cs
         y = ymin + (int(index / 3) + t) * cs
         self.stop_animations()
-        self.animate(board, x=x, y=y, size=(side/1.5, side/1.5))
+        self.animate(board, x=x, y=y, scale=side/1.5, opacity=.5)
         for _board in self.boards:
             if board is _board:
                 continue
-            self.animate(_board)
+            self.animate(_board, opacity=.2)
 
     def unfocus(self):
         index = self.board_focused_index
@@ -151,11 +136,11 @@ class TenBoardLayout(Widget):
 
         self.stop_animations()
         self.animate(self.board_focused,
-                x=x, y=y, size=(cs, cs))
+                x=x, y=y, scale=cs, opacity=1.)
         for _board in self.boards:
             if board is _board:
                 continue
-            self.animate(_board)
+            self.animate(_board, opacity=1.)
 
         self.board_focused_index = -1
 
@@ -166,16 +151,14 @@ class TenBoardLayout(Widget):
 
     def animate(self, widget, **kwargs):
         kwargs['d'] = .25
-        #kwargs['t'] = 'out_quart'
+        kwargs['t'] = 'out_quart'
         anim = Animation(**kwargs)
         anim.start(widget)
         self.animations.append((anim, widget))
         return anim
 
-
-
 if __name__ == '__main__':
-    class TenApp(App):
+    class TenBoardApp(App):
         def build(self):
             return TenBoardLayout()
-    TenApp().run()
+    TenBoardApp().run()

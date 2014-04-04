@@ -1,12 +1,24 @@
 #:kivy 1.8.0
+#:import random random.random
 
 <TenEmpty>:
+    size: 1, 1
     canvas:
         Color:
-            rgb: 0x47 / 255., 0x45 / 255., 0x46 / 255.
-		Ellipse:
-			pos: self.pos
-			size: self.size
+            hsv: self.index / 9., .8, .8
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 1, 0, 0, self.index % 2
+        Ellipse:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 0, 1, 0, (self.index + 1) % 2
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
 <TenSquare>:
     canvas:
@@ -24,45 +36,48 @@
 			pos: self.pos
 			size: self.size
 
-<TenBoard>
-    on_size: self.reposition()
-	on_pos: self.reposition()
+<TenBoardLayout>:
+    canvas:
+        Color:
+            hsv: .1, .3, .8
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
-<TenPlaceholder>:
-    item: item
-    AnchorLayout:
-        id: anchor
-        TenBoard:
-            id: item
-            size_hint: None, None
-			size: [min(anchor.width, anchor.height)] * 2
-
-<TenGame>:
+<TenBoard>:
+    size: 1, 1
     GridLayout:
-        id: grid
+        id: anchor
+        size: root.size
+        pos: root.pos
+        spacing: '10dp'
+        padding: '15dp'
         rows: 3
         cols: 3
-        canvas:
-            Color:
-                rgb: 0x3F / 255., 0x3C / 255., 0x3E / 255.
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        TenPlaceholder:
-            id: board1
-        TenPlaceholder:
-            id: board2
-        TenPlaceholder:
-            id: board3
-        TenPlaceholder:
-            id: board4
-        TenPlaceholder:
-            id: board5
-        TenPlaceholder:
-            id: board6
-        TenPlaceholder:
-            id: board7
-        TenPlaceholder:
-            id: board8
-        TenPlaceholder:
-            id: board9
+        TenEmpty:
+            id: cell1
+            index: 1
+        TenEmpty:
+            id: cell2
+            index: 2
+        TenEmpty:
+            id: cell3
+            index: 3
+        TenEmpty:
+            id: cell4
+            index: 4
+        TenEmpty:
+            id: cell5
+            index: 5
+        TenEmpty:
+            id: cell6
+            index: 6
+        TenEmpty:
+            id: cell7
+            index: 7
+        TenEmpty:
+            id: cell8
+            index: 8
+        TenEmpty:
+            id: cell9
+            index: 9
