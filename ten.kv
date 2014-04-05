@@ -1,7 +1,7 @@
 #:kivy 1.8.0
 #:import random random.random
 
-<TenEmpty>:
+<TenCell>:
     size: 1, 1
     canvas.before:
         PushMatrix
@@ -11,16 +11,17 @@
             xyz: self.scale, self.scale, 0
     canvas:
         Color:
-            hsv: self.index / 9., .8, .8
-        Rectangle:
-            size: self.size
-        Color:
-            rgba: 1, 0, 0, self.index % 2
+            rgba: 0x47 / 255., 0x45 / 255., 0x46 / 255., self.empty
         Ellipse:
             pos: .25, .25
             size: .5, .5
         Color:
-            rgba: 0, 1, 0, (self.index + 1) % 2
+            rgba: 0xb2 / 255., 0x89 / 255., 0x46 / 255., self.circle
+        Ellipse:
+            pos: .25, .25
+            size: .5, .5
+        Color:
+            rgba: 0x8C / 255., 0x8B / 255., 0x8C / 255., self.square
         Rectangle:
             pos: .25, .25
             size: .5, .5
@@ -46,10 +47,19 @@
 <TenBoardLayout>:
     canvas:
         Color:
-            hsv: .1, .3, .8
+            rgb: 0x3F / 255., 0x3C / 255., 0x3E / 255.
         Rectangle:
             pos: self.pos
             size: self.size
 
+
 <TenBoard>:
     size: 1, 1
+    canvas.before:
+        PushMatrix
+        Translate:
+            xy: self.x, self.y
+        Scale:
+            xyz: self.scale, self.scale, 0
+    canvas.after:
+        PopMatrix

@@ -2,6 +2,7 @@ import kivy
 kivy.require('1.8.0')
 
 from kivy.uix.widget import Widget
+from kivy.uix.layout import Layout
 from kivy.app import App
 from kivy.properties import NumericProperty, ObjectProperty
 from kivy.graphics import *
@@ -9,21 +10,19 @@ from kivy.animation import Animation
 import math
 
 
-class TenEmpty(Widget):
+class TenCell(Widget):
     index = NumericProperty(0)
     scale = NumericProperty(1)
+    empty = NumericProperty(1)
+    circle = NumericProperty(0)
+    square = NumericProperty(0)
 
 
-class TenRound(Widget):
-    pass
-
-
-class TenSquare(Widget):
-    pass
 
 
 class TenBoard(Widget):
     index = NumericProperty(0)
+    scale = NumericProperty(1)
     cube_size = NumericProperty(10)
     cube_padding = NumericProperty(10)
 
@@ -34,7 +33,7 @@ class TenBoard(Widget):
         self.animations = []
 
         for index in range(9):
-            cell = TenEmpty(index=index)
+            cell = TenCell(index=index)
             self.add_widget(cell)
             self.cells.append(cell)
         self.relayout()
@@ -55,7 +54,7 @@ class TenBoard(Widget):
 
     @property
     def cube_info(self):
-        s = min(self.width, self.height)
+        s = self.scale
 
         padding = (s / 3.) / 12
         cs = (s - (padding * 4)) / 3.
@@ -70,18 +69,19 @@ class TenBoard(Widget):
         y += self.y
         return super(TenBoard, self).collide_point(x, y)"""
 
-    def on_touch_down(self, touch):
+    """def on_touch_down(self, touch):
         if not self.collide_point(*touch.pos):
             return False
-        if self.parent.board_focused_index == self.index :
+        if self.parent.board_focused_index == self.index:
+
             self.parent.unfocus()
         else:
             self.parent.unfocus()
             self.parent.focus(self.index)
-        return True
+        return True"""
 
 
-class TenBoardLayout(Widget):
+class TenBoardLayout(Layout):
 
     board_focused_index = NumericProperty(-1)
 
@@ -100,15 +100,14 @@ class TenBoardLayout(Widget):
         xmin, ymin, cs, s, padding = self.cube_info
         x = xmin
         y = ymin
-        cube_size = cs, cs
 
         for index, board in enumerate(self.boards):
             if index == self.board_focused_index:
                 board.pos = xmin, ymin
-                board.size = cube_size
+                board.scale = cs
             else:
                 board.pos = x, y
-                board.size = cube_size
+                board.scale = cs
             if index % 3 == 2:
                 x = xmin
                 y += cs + padding
@@ -136,7 +135,6 @@ class TenBoardLayout(Widget):
         y = ymin + (int(index / 3) + t) * (cs + padding)
         cs_board_focused = side/1.5 - 2 * padding
 
-
         xn = 1
         yn = 1
         size_index_x = 0
@@ -159,7 +157,6 @@ class TenBoardLayout(Widget):
 
     @property
     def cube_info_focus_milieu(self):
-
 
         xmin, ymin, cs, side, padding = self.cube_info
         t = math.ceil(((1 / 3.) / -2.) * 2.) / 2.
@@ -192,7 +189,7 @@ class TenBoardLayout(Widget):
             x, y, cs_board_focus, _xmin, _ymin, _cs, _padding = self.cube_info_focus
 
         self.stop_animations()
-        self.animate(board, x=x, y=y, size=(cs_board_focus, cs_board_focus))
+        self.animate(board, x=x, y=y, scale=cs_board_focus)
 
         _x = _xmin
         _y = _ymin
@@ -205,7 +202,7 @@ class TenBoardLayout(Widget):
                 else:
                     _x += _cs + _padding
                 continue
-            self.animate(_board, x=_x, y=_y, size=(_cs,_cs))
+            self.animate(_board, x=_x, y=_y, scale=_cs)
             if _index % 3 == 2:
                 _x = _xmin
                 _y += _cs + _padding
@@ -222,8 +219,7 @@ class TenBoardLayout(Widget):
         y = ymin + int(index / 3) * (cs + padding)
 
         self.stop_animations()
-        self.animate(self.board_focused,
-                x=x, y=y, size=(cs, cs))
+        self.animate(self.board_focused, x=x, y=y, scale=cs)
         self.relayout()
 
         self.board_focused_index = -1
@@ -241,10 +237,21 @@ class TenBoardLayout(Widget):
         self.animations.append((anim, widget))
         return anim
 
+    def on_touch_down(self, touch):
+        for index, board in enumerate(self.boards):
+            if board.collide_point(*touch.pos):
+                if self.board_focused_index == index:
+                    self.unfocus()
+                else:
+                    self.unfocus()
+                    self.focus(index)
+        return True
 
+
+class TenApp(App):
+    def build(self):
+        self.game = TenBoardLayout()
+        return self.game
 
 if __name__ == '__main__':
-    class TenApp(App):
-        def build(self):
-            return TenBoardLayout()
     TenApp().run()
