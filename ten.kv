@@ -3,22 +3,29 @@
 
 <TenEmpty>:
     size: 1, 1
+    canvas.before:
+        PushMatrix
+        Translate:
+            xy: self.x, self.y
+        Scale:
+            xyz: self.scale, self.scale, 0
     canvas:
         Color:
             hsv: self.index / 9., .8, .8
         Rectangle:
-            pos: self.pos
             size: self.size
         Color:
             rgba: 1, 0, 0, self.index % 2
         Ellipse:
-            pos: self.pos
-            size: self.size
+            pos: .25, .25
+            size: .5, .5
         Color:
             rgba: 0, 1, 0, (self.index + 1) % 2
         Rectangle:
-            pos: self.pos
-            size: self.size
+            pos: .25, .25
+            size: .5, .5
+    canvas.after:
+        PopMatrix
 
 <TenSquare>:
     canvas:
@@ -46,38 +53,3 @@
 
 <TenBoard>:
     size: 1, 1
-    GridLayout:
-        id: anchor
-        size: root.size
-        pos: root.pos
-        spacing: '10dp'
-        padding: '15dp'
-        rows: 3
-        cols: 3
-        TenEmpty:
-            id: cell1
-            index: 1
-        TenEmpty:
-            id: cell2
-            index: 2
-        TenEmpty:
-            id: cell3
-            index: 3
-        TenEmpty:
-            id: cell4
-            index: 4
-        TenEmpty:
-            id: cell5
-            index: 5
-        TenEmpty:
-            id: cell6
-            index: 6
-        TenEmpty:
-            id: cell7
-            index: 7
-        TenEmpty:
-            id: cell8
-            index: 8
-        TenEmpty:
-            id: cell9
-            index: 9
