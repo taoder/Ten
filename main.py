@@ -18,8 +18,6 @@ class TenCell(Widget):
     square = NumericProperty(0)
 
 
-
-
 class TenBoard(Widget):
     index = NumericProperty(0)
     scale = NumericProperty(1)
@@ -45,7 +43,7 @@ class TenBoard(Widget):
 
         for index, cell in enumerate(self.cells):
             cell.pos = x, y
-            cell.scale = cs
+            cell.size = cs, cs
             if index % 3 == 2:
                 x = xmin
                 y += cs + padding

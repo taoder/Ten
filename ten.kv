@@ -2,47 +2,22 @@
 #:import random random.random
 
 <TenCell>:
-    size: 1, 1
-    canvas.before:
-        PushMatrix
-        Translate:
-            xy: self.x, self.y
-        Scale:
-            xyz: self.scale, self.scale, 0
     canvas:
         Color:
             rgba: 0x47 / 255., 0x45 / 255., 0x46 / 255., self.empty
         Ellipse:
-            pos: .25, .25
-            size: .5, .5
+            pos: self.pos
+            size: self.size
         Color:
             rgba: 0xb2 / 255., 0x89 / 255., 0x46 / 255., self.circle
         Ellipse:
-            pos: .25, .25
-            size: .5, .5
+            pos: self.pos
+            size: self.size
         Color:
             rgba: 0x8C / 255., 0x8B / 255., 0x8C / 255., self.square
         Rectangle:
-            pos: .25, .25
-            size: .5, .5
-    canvas.after:
-        PopMatrix
-
-<TenSquare>:
-    canvas:
-        Color:
-            rgb: 0x8C / 255., 0x8B / 255., 0x8C / 255.
-		Rectangle:
-			pos: self.pos
-			size: self.size
-
-<TenRound>:
-    canvas:
-        Color:
-	        rgb: 0xb2 / 255., 0x89 / 255., 0x46 / 255.
-		Ellipse:
-			pos: self.pos
-			size: self.size
+            pos: self.pos
+            size: self.size
 
 <TenBoardLayout>:
     canvas:
