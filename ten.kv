@@ -1,6 +1,14 @@
 #:kivy 1.8.0
 #:import random random.random
 
+<TextButton@Button>:
+	color: 1, 1, 1, 1
+	background_color: 0xbb / 255., 0xad / 255., 0xa0 / 255., 1.
+	size_hint_y: None
+	height: '48dp'
+	font_size: '20dp'
+	bold: True
+
 <TenCell>:
     canvas:
         Color:
@@ -26,6 +34,39 @@
         Rectangle:
             pos: self.pos
             size: self.size
+        Color:
+            rgba: 0xb2 / 255., 0x89 / 255., 0x46 / 255., self.circle
+        Ellipse:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 0x8C / 255., 0x8B / 255., 0x8C / 255., self.square
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    AnchorLayout:
+        id: end
+        pos: root.pos
+		size: root.size
+        opacity: 0
+        BoxLayout:
+
+			orientation: 'vertical'
+			padding: '10dp'
+			spacing: '20dp'
+
+			Label:
+				id: end_label
+				font_size: min(self.height, self.width) / 3.
+				color: 0x77 / 255., 0x6e / 255., 0x65 / 255., 1.
+				bold: True
+				text: 'Game\nover!'
+				halign: 'center'
+
+			TextButton:
+				text: 'Restart'
+				on_press: root.restart() if end.opacity == 1. else None
+				font_size: '20dp'
 
 
 <TenBoard>:
@@ -36,5 +77,16 @@
             xy: self.x, self.y
         Scale:
             xyz: self.scale, self.scale, 0
+    canvas:
+        Color:
+            rgba: 0xb2 / 255., 0x89 / 255., 0x46 / 255., self.circle
+        Ellipse:
+            pos: 0, 0
+            size: 1, 1
+        Color:
+            rgba: 0x8C / 255., 0x8B / 255., 0x8C / 255., self.square
+        Rectangle:
+            pos: 0, 0
+            size: 1, 1
     canvas.after:
         PopMatrix
