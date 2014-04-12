@@ -1,17 +1,18 @@
+__version__ = '0.1.0'
 import kivy
 kivy.require('1.8.0')
 
 from kivy.uix.widget import Widget
 from kivy.uix.layout import Layout
 from kivy.app import App
-from kivy.properties import NumericProperty, ObjectProperty
-from kivy.graphics import *
+from kivy.properties import NumericProperty
 from kivy.animation import Animation
 import math
+import time
 
 
-div_padding_board = 6
-div_padding_cell = 2.5
+div_padding_board = 5
+div_padding_cell = 2
 
 
 class TenCell(Widget):
@@ -124,27 +125,28 @@ class TenBoard(Widget):
 
     def change(self):
         player = self.parent.players[self.parent.number_of_tour % 2]
-        print("change")
-        while self.cells:
-            self.remove_widget(self.cells.pop())
+        self.clear_widgets()
+        self.cells = []
         if player == "circle":
             self.circle = 1
         else:
             self.square = 1
+        self.parent.unfocus()
 
     def check(self):
+        cells_value = [cell.value for cell in self.cells]
         for i in range(3):
-            if self.cells[i].value == self.cells[i+3].value == self.cells[i+6].value != "empty":
+            if cells_value[i] == cells_value[i+3] == cells_value[i+6] != "empty":
                 self.change()
                 return True
-        for i in range(0, 6, 3):
-            if self.cells[i].value == self.cells[i+1].value == self.cells[i+2].value != "empty":
+        for i in range(0, 7, 3):
+            if cells_value[i] == cells_value[i+1] == cells_value[i+2] != "empty":
                 self.change()
                 return True
-        if self.cells[0].value == self.cells[4].value == self.cells[8].value != "empty":
+        if cells_value[0] == cells_value[4] == cells_value[8] != "empty":
             self.change()
             return True
-        if self.cells[6].value == self.cells[4].value == self.cells[2].value != "empty":
+        if cells_value[6] == cells_value[4] == cells_value[2] != "empty":
             self.change()
             return True
 
@@ -175,23 +177,38 @@ class TenBoardLayout(Layout):
         xmin, ymin, cs, s, padding = self.cube_info
         x = xmin
         y = ymin
-
-        for index, board in enumerate(self.boards):
-            if index == self.board_focused_index:
-                if index == 4:
-                    x, y, cs_board_focus, _xmin, _ymin, _cs, _padding = self.cube_info_focus_milieu
+        index = self.board_focused_index
+        board = self.board_focused
+        if index == -1:
+            for _index, _board in enumerate(self.boards):
+                _board.pos = x, y
+                _board.scale = cs
+                if _index % 3 == 2:
+                    x = xmin
+                    y += cs + padding
                 else:
-                    x, y, cs_board_focus, _xmin, _ymin, _cs, _padding = self.cube_info_focus
-                board.pos = _xmin, _ymin
-                board.scale = cs_board_focus
+                    x += cs + padding
+        else:
+            if index == 4:
+                x, y, cs_board_focus, _xmin, _ymin, _cs, _padding = self.cube_info_focus_milieu
             else:
-                board.pos = x, y
-                board.scale = cs
-            if index % 3 == 2:
-                x = xmin
-                y += cs + padding
-            else:
-                x += cs + padding
+                x, y, cs_board_focus, _xmin, _ymin, _cs, _padding = self.cube_info_focus
+
+            board.pos = x, y
+            board.scale = cs_board_focus
+
+            _x = _xmin
+            _y = _ymin
+
+            for _index, _board in enumerate(self.boards):
+                if board is not _board:
+                    _board.pos = _x, _y
+                    _board.scale = _cs
+                if _index % 3 == 2:
+                    _x = _xmin
+                    _y += _cs + _padding
+                else:
+                    _x += _cs + _padding
 
     @property
     def cube_info(self):
@@ -303,12 +320,12 @@ class TenBoardLayout(Layout):
         self.board_focused_index = -1
 
     def stop_animations(self):
-        while self.animations:
-            anim, widget = self.animations.pop()
+        for anim, widget in self.animations:
             anim.stop_all(widget)
+        self.animations = []
 
     def animate(self, widget, **kwargs):
-        kwargs['d'] = .50
+        kwargs['d'] = .65
         kwargs['t'] = 'out_quart'
         anim = Animation(**kwargs)
         anim.start(widget)
@@ -317,9 +334,8 @@ class TenBoardLayout(Layout):
 
     def change(self):
         player = self.players[self.number_of_tour % 2]
-        print("change")
-        while self.boards:
-            self.remove_widget(self.boards.pop())
+        self.clear_widgets()
+        self.boards = []
         if player == "circle":
             self.circle = 1
         else:
@@ -330,7 +346,7 @@ class TenBoardLayout(Layout):
             if self.boards[i].value == self.boards[i+3].value == self.boards[i+6].value != "empty":
                 self.change()
                 return True
-        for i in range(0, 6, 3):
+        for i in range(0, 7, 3):
             if self.boards[i].value == self.boards[i+1].value == self.boards[i+2].value != "empty":
                 self.change()
                 return True
@@ -344,12 +360,11 @@ class TenBoardLayout(Layout):
     def on_touch_down(self, touch):
         for index_board, board in enumerate(self.boards):
             if board.collide_point(*touch.pos) and board.is_free():
-                if self.board_focused_index == index_board :
+                if self.board_focused_index == index_board:
                     # si different de -1 le coup est prit en compte
                     index_cell = board.play_here(touch, self.players[self.number_of_tour % 2])
                     if index_cell != -1:
                         board.check()
-                        self.unfocus()
                         if self.check():
                             self.end()
                             return
@@ -387,8 +402,7 @@ class TenBoardLayout(Layout):
 
 class TenApp(App):
     def build(self):
-        self.game = TenBoardLayout()
-        return self.game
+        return TenBoardLayout()
 
 if __name__ == '__main__':
     TenApp().run()
