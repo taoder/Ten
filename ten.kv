@@ -1,7 +1,7 @@
 #:kivy 1.8.0
 #:import random random.random
 
-<RestartButton>:
+<RestartButton@ButtonBehavior+Label>:
 	color: 1, 1, 1, 1
 	background_color: 0xbb / 255., 0xad / 255., 0xa0 / 255., 1.
 	size_hint_y: None
@@ -36,9 +36,10 @@
             pos: self.pos
             size: self.size
     AnchorLayout:
-        id: anchor
+        id: end
         pos: root.cube_x, root.cube_y
 		size: root.cube_size, root.cube_size
+		opacity: 0
         canvas:
             Color:
                 rgba: 0xb2 / 255., 0x89 / 255., 0x46 / 255., root.circle
@@ -51,11 +52,9 @@
                 pos: self.pos
                 size: self.size
         BoxLayout:
-            id: end
 			orientation: 'vertical'
 			padding: '10dp'
 			spacing: '20dp'
-            opacity: 0
 			Label:
 				id: end_label
 				font_size: '30dp'
@@ -67,6 +66,7 @@
 			RestartButton:
 			    layout: layout
 				text: 'Restart'
+				on_press: root.restart
 				font_size: '20dp'
 
 

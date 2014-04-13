@@ -23,7 +23,6 @@ class RestartButton(ButtonBehavior, Label):
     layout = ObjectProperty()
 
     def on_press(self):
-        print('lolo')
         self.layout.restart()
 
 
@@ -378,22 +377,20 @@ class TenBoardLayout(Layout):
     def change(self):
         player = self.players[self.number_of_tour % 2]
         board = self.board_focused
-        anchor = self.ids.anchor.__self__
-        self.remove_widget(anchor)
-        self.add_widget(anchor)
         self.destroy()
         if player == "circle":
             self.circle = 1
         else:
             self.square = 1
-        x = anchor.x
-        y = anchor.y
-        size = anchor.size
+        x = self.cube_x
+        y = self.cube_y
+        size = self.cube_size
 
-        anchor.pos = board.x, board.y
-        anchor.size = board.size
+        self.cube_x = board.x
+        self.cube_y = board.y
+        self.cube_size = board.size[0]
 
-        self.animate(anchor, x=x, y=y, size=size)
+        self.animate(self, cube_x=x, cube_y=y, cube_size=size)
 
     def check(self, index_cell):
         t = 0.5
@@ -443,8 +440,8 @@ class TenBoardLayout(Layout):
 
     def end(self, *largs):
         end = self.ids.end.__self__
-        #self.remove_widget(end)
-        #self.add_widget(end)
+        self.remove_widget(end)
+        self.add_widget(end)
         text = 'Player ' + self.players[self.number_of_tour % 2] + ' win !!'
         self.ids.end_label.text = text
         Animation(opacity=1., d=.5).start(end)
