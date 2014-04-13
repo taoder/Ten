@@ -1,7 +1,7 @@
 #:kivy 1.8.0
 #:import random random.random
 
-<TextButton@Button>:
+<RestartButton>:
 	color: 1, 1, 1, 1
 	background_color: 0xbb / 255., 0xad / 255., 0xa0 / 255., 1.
 	size_hint_y: None
@@ -28,44 +28,45 @@
             size: self.size
 
 <TenBoardLayout>:
+    id: layout
     canvas:
         Color:
             rgb: 0x3F / 255., 0x3C / 255., 0x3E / 255.
         Rectangle:
             pos: self.pos
             size: self.size
-        Color:
-            rgba: 0xb2 / 255., 0x89 / 255., 0x46 / 255., self.circle
-        Ellipse:
-            pos: self.pos
-            size: self.size
-        Color:
-            rgba: 0x8C / 255., 0x8B / 255., 0x8C / 255., self.square
-        Rectangle:
-            pos: self.pos
-            size: self.size
     AnchorLayout:
-        id: end
-        pos: root.pos
-		size: root.size
-        opacity: 0
+        id: anchor
+        pos: root.cube_x, root.cube_y
+		size: root.cube_size, root.cube_size
+        canvas:
+            Color:
+                rgba: 0xb2 / 255., 0x89 / 255., 0x46 / 255., root.circle
+            Ellipse:
+                pos: self.pos
+                size: self.size
+            Color:
+                rgba: 0x8C / 255., 0x8B / 255., 0x8C / 255., root.square
+            Rectangle:
+                pos: self.pos
+                size: self.size
         BoxLayout:
-
+            id: end
 			orientation: 'vertical'
 			padding: '10dp'
 			spacing: '20dp'
-
+            opacity: 0
 			Label:
 				id: end_label
-				font_size: min(self.height, self.width) / 3.
+				font_size: '30dp'
 				color: 0x77 / 255., 0x6e / 255., 0x65 / 255., 1.
 				bold: True
 				text: 'Game\nover!'
 				halign: 'center'
 
-			TextButton:
+			RestartButton:
+			    layout: layout
 				text: 'Restart'
-				on_press: root.restart() if end.opacity == 1. else None
 				font_size: '20dp'
 
 
