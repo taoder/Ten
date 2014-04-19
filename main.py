@@ -17,6 +17,7 @@ import math
 
 div_padding_board = 5
 div_padding_cell = 2
+WAYS_TO_WIN = ((0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6))
 
 
 class RestartButton(ButtonBehavior, Label):
@@ -153,20 +154,13 @@ class TenBoard(Widget):
 
     def check(self, index_cell):
         cells_value = [cell.value for cell in self.cells]
-        for i in range(3):
-            if cells_value[i] == cells_value[i+3] == cells_value[i+6] != "empty":
+
+        for row in WAYS_TO_WIN:
+            if index_cell not in row:
+                pass
+            if cells_value[row[0]] == cells_value[row[1]] == cells_value[row[2]] != "empty":
                 self.change(index_cell)
                 return True
-        for i in range(0, 7, 3):
-            if cells_value[i] == cells_value[i+1] == cells_value[i+2] != "empty":
-                self.change(index_cell)
-                return True
-        if cells_value[0] == cells_value[4] == cells_value[8] != "empty":
-            self.change(index_cell)
-            return True
-        if cells_value[6] == cells_value[4] == cells_value[2] != "empty":
-            self.change(index_cell)
-            return True
 
     def destroy(self):
         self.clear_widgets()
@@ -188,6 +182,7 @@ class TenBoardLayout(Layout):
         self.bind(pos=self.relayout, size=self.relayout)
         self.boards = []
         self.animations = []
+        self.is_playing = False
         for index in range(9):
             board = TenBoard(index=index)
             self.add_widget(board)
@@ -396,26 +391,20 @@ class TenBoardLayout(Layout):
         t = 0.5
         if self.board_focused.check(index_cell):
             t = 1.5
-            boards = [board.value for board in self.boards]
-            for i in range(3):
-                if boards[i] == boards[i+3] == boards[i+6] != "empty":
+            boards_value = [board.value for board in self.boards]
+            for row in WAYS_TO_WIN:
+                if self.board_focused_index not in row:
+                    pass
+                if boards_value[row[0]] == boards_value[row[1]] == boards_value[row[2]] != "empty":
                     self.change()
                     return True
-            for i in range(0, 7, 3):
-                if boards[i] == boards[i+1] == boards[i+2] != "empty":
-                    self.change()
-                    return True
-            if boards[0] == boards[4] == boards[8] != "empty":
-                self.change()
-                return True
-            if boards[6] == boards[4] == boards[2] != "empty":
-                self.change()
-                return True
         Clock.schedule_once(partial(self.next_player, index_cell), t)
 
     def on_touch_down(self, touch):
         if not self.is_free():
             super(TenBoardLayout, self).on_touch_down(touch)
+        elif self.is_playing:
+            pass
         else:
             for index_board, board in enumerate(self.boards):
                 if board.collide_point(*touch.pos) and board.is_free():
@@ -426,6 +415,7 @@ class TenBoardLayout(Layout):
                         # si different de -1 le coup est prit en compte
                         index_cell = board.play_here(touch, self.players[self.number_of_tour % 2])
                         if index_cell != -1:
+                            self.is_playing = True
                             if self.check(index_cell):
                                 Clock.schedule_once(self.end, 0.5)
                                 return True
@@ -437,6 +427,7 @@ class TenBoardLayout(Layout):
         else:
             self.unfocus()
         self.number_of_tour += 1
+        self.is_playing = False
 
     def end(self, *largs):
         end = self.ids.end.__self__
@@ -450,6 +441,7 @@ class TenBoardLayout(Layout):
         self.ids.end.opacity = 0
         self.number_of_tour = 0
         self.board_focused_index = -1
+        self.is_playing = False
         self.circle = 0
         self.square = 0
 
